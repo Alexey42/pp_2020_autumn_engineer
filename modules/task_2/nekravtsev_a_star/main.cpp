@@ -15,9 +15,7 @@ TEST(Parallel_Operations_MPI, Test_Topology) {
 
   MPI_Topo_test(result, &status);
 
-  if (procRank == 1) {
-    EXPECT_EQ(MPI_GRAPH, status) << "Wrong result";
-  }
+  EXPECT_EQ(MPI_GRAPH, status) << "Wrong result";
 }
 
 TEST(Parallel_Operations_MPI, Test_Neighbours_Count) {
@@ -28,15 +26,10 @@ TEST(Parallel_Operations_MPI, Test_Neighbours_Count) {
   MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
   MPI_Comm_size(MPI_COMM_WORLD, &procNum);
   createStar(MPI_COMM_WORLD, &result);
-  MPI_Topo_test(result, &status);
 
-  if (status == MPI_GRAPH) {
-    MPI_Graph_neighbors_count(result, 0, &status);
-  }
+  MPI_Graph_neighbors_count(result, 0, &status);
 
-  if (procRank == 1) {
-    EXPECT_EQ(procNum - 1, status) << "Wrong result";
-  }
+  EXPECT_EQ(procNum - 1, status) << "Wrong result";
 }
 
 TEST(Parallel_Operations_MPI, Test_Neighbours_Set) {
@@ -47,9 +40,8 @@ TEST(Parallel_Operations_MPI, Test_Neighbours_Set) {
   MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
   MPI_Comm_size(MPI_COMM_WORLD, &procNum);
   createStar(MPI_COMM_WORLD, &result);
-  MPI_Topo_test(result, &status);
 
-  if (procRank == 1 && status == MPI_GRAPH) {
+  if (procRank == 1) {
     int t = 0;
     status = 0;
     for (int i = 1; i < procNum; i++) {
@@ -57,7 +49,9 @@ TEST(Parallel_Operations_MPI, Test_Neighbours_Set) {
       status += t;
     }
 
-    EXPECT_EQ(procNum - 1, status) << "Wrong result";
+    if (procRank == 1) {
+      EXPECT_EQ(procNum - 1, status) << "Wrong result";
+    }
   }
 }
 
