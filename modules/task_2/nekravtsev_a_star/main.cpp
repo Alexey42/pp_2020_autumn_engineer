@@ -1,7 +1,6 @@
 // Copyright 2020 Alexey Nekravtsev
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
-#include <vector>
 #include "../../modules/task_2/nekravtsev_a_star/star.h"
 
 
@@ -66,10 +65,14 @@ TEST(Parallel_Operations_MPI, Test_starSend_Transit) {
   int in[3] = { 1, 2, 3 }, out[3] = { 3, 2, 1 };
   createStar(MPI_COMM_WORLD, &result);
 
-  starSend(&in, 3, MPI_INT, procNum - 1, 1, 1, result);
-  starRecv(&out, 3, MPI_INT, procNum - 1, 1, 1, result, &status);
+  if (procNum == 1) {
+    EXPECT_ANY_THROW(starSend(&in, 3, MPI_INT, procNum - 1, 1, 1, result););
+  } else {
+    starSend(&in, 3, MPI_INT, procNum - 1, 1, 1, result);
+    starRecv(&out, 3, MPI_INT, procNum - 1, 1, 1, result, &status);
+  }
 
-  if (procRank == 1) {
+  if (procRank == 1 && procNum != 1) {
     EXPECT_EQ(out[0], in[0]) << "Wrong result";
   }
 }
@@ -85,10 +88,14 @@ TEST(Parallel_Operations_MPI, Test_starSend_To_Center) {
   int in = 3, out = 5;
   createStar(MPI_COMM_WORLD, &result);
 
-  starSend(&in, 1, MPI_INT, procNum - 1, 0, 1, result);
-  starRecv(&out, 1, MPI_INT, procNum - 1, 0, 1, result, &status);
+  if (procNum == 1) {
+    EXPECT_ANY_THROW(starSend(&in, 1, MPI_INT, procNum - 1, 0, 1, result));
+  } else {
+    starSend(&in, 1, MPI_INT, procNum - 1, 0, 1, result);
+    starRecv(&out, 1, MPI_INT, procNum - 1, 0, 1, result, &status);
+  }
 
-  if (procRank == 0) {
+  if (procRank == 0 && procNum != 1) {
     EXPECT_EQ(out, in) << "Wrong result";
   }
 }
@@ -104,10 +111,14 @@ TEST(Parallel_Operations_MPI, Test_starSend_From_Center) {
   int in = 3, out = 5;
   createStar(MPI_COMM_WORLD, &result);
 
-  starSend(&in, 1, MPI_INT, 0, procNum - 1, 1, result);
-  starRecv(&out, 1, MPI_INT, 0, procNum - 1, 1, result, &status);
+  if (procNum == 1) {
+    EXPECT_ANY_THROW(starSend(&in, 1, MPI_INT, 0, procNum - 1, 1, result););
+  } else {
+    starSend(&in, 1, MPI_INT, 0, procNum - 1, 1, result);
+    starRecv(&out, 1, MPI_INT, 0, procNum - 1, 1, result, &status);
+  }
 
-  if (procRank == procNum - 1) {
+  if (procRank == procNum - 1 && procNum != 1) {
     EXPECT_EQ(out, in) << "Wrong result";
   }
 }
