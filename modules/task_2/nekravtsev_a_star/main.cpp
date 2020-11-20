@@ -58,7 +58,6 @@ TEST(Parallel_Operations_MPI, Test_starSend_Transit) {
   int procRank, procNum;
   MPI_Comm result;
   MPI_Status status;
-
   MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
   MPI_Comm_size(MPI_COMM_WORLD, &procNum);
 
